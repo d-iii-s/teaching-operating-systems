@@ -1,0 +1,6 @@
+#!/bin/bash
+set -euo pipefail
+
+gcc -S loop.c
+gcc -g -c loop.c
+objdump --all --disassemble loop.o > loop.o.dump

@@ -1,0 +1,88 @@
+	.file	"alloc.c"
+	.text
+
+; Our statically allocated string is declared in a static data section.
+; A unique label is assigned to the address of the string, used below.
+
+	.section	.rodata
+	.align 8
+.LC0:
+	.string	"Failed to allocate %zi bytes.\n"
+
+; Code goes into text section.
+
+	.text
+
+; This defines the safe_malloc function as a global label.
+
+	.globl	safe_malloc
+	.type	safe_malloc, @function
+safe_malloc:
+.LFB6:
+
+; The various CFI directives are an assembly language extension
+; used to describe the call frame information. Ignore those.
+
+; Establish standard stack frame, save old frame pointer onto stack and set new.
+
+	.cfi_startproc
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+
+; Allocate space for local variables on the stack.
+; The space is too large for one pointer, this is
+; because GCC also reserves space for saving
+; callee saved registers, and because an
+; alignment of 16 bytes is enforced.
+
+	subq	$32, %rsp
+
+; This code is not optimized, so we see some strange
+; moving of things around, which ends up being
+; entirely useless. Note that arguments
+; were passed in registers (!) and
+; are put on stack only now
+; (this is not common).
+
+	movq	%rdi, -24(%rbp)
+	movq	-24(%rbp), %rax
+	movq	%rax, %rdi
+	call	malloc
+
+; The RAX register contains the output result.
+
+	movq	%rax, -8(%rbp)
+	cmpq	$0, -8(%rbp)
+	jne	.L2
+
+; The error reporting branch.
+
+	movq	-24(%rbp), %rax
+	movq	%rax, %rsi
+	movl	$.LC0, %edi
+	movl	$0, %eax
+	call	printf
+
+; The exit function never returns.
+
+	movl	$12, %edi
+	call	exit
+
+; The standard branch.
+; Return value in RAX.
+; Clean up stack (the LEAVE instruction is equivalent to MOV RSP, RBP and POP RBP).
+
+.L2:
+	movq	-8(%rbp), %rax
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+
+.LFE6:
+	.size	safe_malloc, .-safe_malloc
+	.ident	"GCC: (GNU) 11.2.1 20210728 (Red Hat 11.2.1-1)"
+	.section	.note.GNU-stack,"",@progbits

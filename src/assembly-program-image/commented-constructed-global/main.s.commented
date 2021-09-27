@@ -1,0 +1,141 @@
+	.file	"main.c"
+	.section	.text._ZN1XC1Ei,"axG",@progbits,_ZN1XC1Ei,comdat
+	.align 2
+
+; What on Earth is ZN1XC1Ei ? Well, it is a mangled
+; name which means X::X (int). Mangling is done
+; because linker does not understand objects.
+
+	.weak	_ZN1XC1Ei
+	.type	_ZN1XC1Ei, @function
+_ZN1XC1Ei:
+.LFB2:
+	.cfi_startproc
+	.cfi_personality 0x3,__gxx_personality_v0
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	movq	%rsp, %rbp
+	.cfi_offset 6, -16
+	.cfi_def_cfa_register 6
+
+; This code is not optimized, so we see some strange
+; moving of things around, which ends up being
+; entirely useless. Note that arguments
+; were passed in registers (!) and
+; are put on stack only now
+; (this is not common).
+
+	movq	%rdi, -8(%rbp)
+	movl	%esi, -12(%rbp)
+	addl	$1, -12(%rbp)
+
+	leave
+	ret
+	.cfi_endproc
+
+.LFE2:
+	.size	_ZN1XC1Ei, .-_ZN1XC1Ei
+
+; This defines the x variable as a global label
+; that occupies 1 byte of zero filled memory.
+; Even an empty object is at least 1 byte
+; in size to be distinguishable.
+
+.globl x
+	.bss
+	.type	x, @object
+	.size	x, 1
+x:
+	.zero	1
+	.text
+
+.globl main
+	.type	main, @function
+main:
+.LFB3:
+	.cfi_startproc
+	.cfi_personality 0x3,__gxx_personality_v0
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	movq	%rsp, %rbp
+	.cfi_offset 6, -16
+	.cfi_def_cfa_register 6
+	movl	$1234, %eax
+	leave
+	ret
+	.cfi_endproc
+.LFE3:
+	.size	main, .-main
+
+; This is a function that calls the constructor on x.
+; The function would actually be also able to call
+; a destructor, but we do not have that.
+
+	.type	_Z41__static_initialization_and_destruction_0ii, @function
+_Z41__static_initialization_and_destruction_0ii:
+.LFB4:
+	.cfi_startproc
+	.cfi_personality 0x3,__gxx_personality_v0
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	movq	%rsp, %rbp
+	.cfi_offset 6, -16
+	.cfi_def_cfa_register 6
+	subq	$16, %rsp
+	movl	%edi, -4(%rbp)
+	movl	%esi, -8(%rbp)
+
+; Branching, do we construct or destruct ?
+
+	cmpl	$1, -4(%rbp)
+	jne	.L7
+	cmpl	$65535, -8(%rbp)
+	jne	.L7
+
+; Constructing, call the constructor function
+; on x, arguments are passed in registers.
+
+	movl	$1234, %esi
+	movl	$x, %edi
+	call	_ZN1XC1Ei
+.L7:
+	leave
+	ret
+	.cfi_endproc
+.LFE4:
+	.size	_Z41__static_initialization_and_destruction_0ii, .-_Z41__static_initialization_and_destruction_0ii
+
+; Another wrapper for the initializing function.
+; Nothing spectacular here anyway.
+
+	.type	_GLOBAL__I_x, @function
+_GLOBAL__I_x:
+.LFB5:
+	.cfi_startproc
+	.cfi_personality 0x3,__gxx_personality_v0
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	movq	%rsp, %rbp
+	.cfi_offset 6, -16
+	.cfi_def_cfa_register 6
+	movl	$65535, %esi
+	movl	$1, %edi
+	call	_Z41__static_initialization_and_destruction_0ii
+	leave
+	ret
+	.cfi_endproc
+.LFE5:
+	.size	_GLOBAL__I_x, .-_GLOBAL__I_x
+
+; And this is the important part. Section CTORS
+; contains a list of constructors to be called
+; before main (), we put our wrapper for the
+; initializing function here.
+
+; Who calls the constructors from this section ?
+
+	.section	.ctors,"aw",@progbits
+	.align 8
+	.quad	_GLOBAL__I_x
+	.ident	"GCC: (GNU) 4.4.1 20090725 (Red Hat 4.4.1-2)"
+	.section	.note.GNU-stack,"",@progbits

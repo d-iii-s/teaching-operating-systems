@@ -1,0 +1,9 @@
+#!/bin/bash
+set -euo pipefail
+
+for OPT in O0 O2 O3
+do
+    gcc -S -${OPT} alloc.c -o alloc.${OPT}.s
+    gcc -g -c -${OPT} alloc.c -o alloc.${OPT}.o
+    objdump --all --disassemble alloc.${OPT}.o > alloc.${OPT}.o.dump
+done

@@ -1,0 +1,71 @@
+	.file	"main.c"
+
+; This says the i variable will be visible outside the module.
+; The type of the symbol is a data object.
+
+.globl i
+	.bss
+	.align 4
+	.type	i, @object
+	.size	i, 4
+
+; This defines i as a label pointing to 4 zero filled bytes.
+; Note that zero filled bytes are in the BSS section.
+
+i:
+	.zero	4
+
+; This says the j variable will be visible outside the module.
+; The type of the symbol is a data object.
+
+.globl j
+	.data
+	.align 4
+	.type	j, @object
+	.size	j, 4
+
+; This defines j as a label pointing to a long integer
+; initialized with value 1234. Note that initialized
+; long integer is in the DATA section.
+
+j:
+	.long	1234
+	.text
+
+; The rest is almost the same as in an empty main ().
+
+.globl main
+	.type	main, @function
+main:
+.LFB0:
+	.cfi_startproc
+	.cfi_personality 0x3,__gxx_personality_v0
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	movq	%rsp, %rbp
+	.cfi_offset 6, -16
+	.cfi_def_cfa_register 6
+
+; We address relatively to the instruction pointer.
+; This means the code is easier to relocate.
+
+	movl	i(%rip), %edx
+	movl	j(%rip), %eax
+
+; The compiler shows us how it can optimize.
+; Adding can be done by using a special
+; addressing mode rather than by
+; the ADD instruction.
+; Is it shorter ?
+; Is it faster ?
+
+	leal	(%rdx,%rax), %eax
+
+	leave
+	ret
+	.cfi_endproc
+
+.LFE0:
+	.size	main, .-main
+	.ident	"GCC: (GNU) 4.4.1 20090725 (Red Hat 4.4.1-2)"
+	.section	.note.GNU-stack,"",@progbits

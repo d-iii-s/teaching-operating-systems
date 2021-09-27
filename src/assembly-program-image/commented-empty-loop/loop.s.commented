@@ -1,0 +1,93 @@
+	.file	"loop.c"
+
+; This says the i symbol is a local symbol inside the module.
+
+	.local	i
+
+; This says the i symbol is an address of 4 bytes inside uninitialized memory.
+
+	.comm	i,4,4
+
+; This is where the program starts.
+
+	.text
+
+; This says the loop symbol is a function symbol visible outside the module.
+
+	.globl	loop
+	.type	loop, @function
+
+; This defines loop as a label pointing to the start of the following code.
+; Another label for the same location is defined too,
+; probably to simplify for loop implementation.
+
+loop:
+.LFB0:
+
+; The CFI (Call Frame Information) directives tell
+; the assembler to produce a separate section where
+; information about function stack frames is located.
+; Information about function stack frames is needed
+; for debugging and for exception processing.
+
+	.cfi_startproc
+
+; This part of the code creates standard stack frame.
+; Old value of RBP is saved on stack, new value
+; of RPB points to (potential) local variables.
+
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+
+; Local variable j is addressed relative to RBP.
+; The C name is not visible in the assembly source.
+
+	movl	$0, -4(%rbp)
+
+; The loop condition is checked at the end.
+; Go there rather than replicating
+; the condition check here.
+
+	jmp	.L2
+
+; We are position independent so address variables relative to EIP.
+; The EAX and EDX registers are used to hold temprary
+; copies of i and j, but everything is written
+; back to memory afterwards.
+
+.L3:
+	movl	i(%rip), %edx
+	movl	-4(%rbp), %eax
+	addl	%edx, %eax
+	movl	%eax, i(%rip)
+	addl	$1, -4(%rbp)
+
+; Check the loop termination condition.
+
+.L2:
+	cmpl	$9, -4(%rbp)
+	jle	.L3
+
+; Perhaps just a leftover since optimizations were disabled.
+; But there are other possible reasons,
+; in particular alignment or
+; tracing trampoline.
+
+	nop
+
+; Restore the original value of EBP from stack.
+; Note that EAX and EDX were also trashed,
+; this is OK as defined in ABI.
+
+	popq	%rbp
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+
+.LFE0:
+	.size	loop, .-loop
+	.ident	"GCC: (GNU) 6.2.1 20160916 (Red Hat 6.2.1-2)"
+	.section	.note.GNU-stack,"",@progbits

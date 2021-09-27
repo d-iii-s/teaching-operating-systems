@@ -1,4 +1,3 @@
-int main (void)
-{
-  return (1234);
+int main (void) {
+    return (1234);
 }

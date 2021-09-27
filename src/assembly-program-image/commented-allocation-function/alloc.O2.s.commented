@@ -1,0 +1,71 @@
+	.file	"alloc.c"
+	.text
+
+; Our statically allocated string is declared in a static data section.
+; A unique label is assigned to the address of the string, used below.
+
+	.section	.rodata.str1.8,"aMS",@progbits,1
+	.align 8
+.LC0:
+	.string	"Failed to allocate %zi bytes.\n"
+
+; Code goes into text section.
+
+	.text
+	.p2align 4
+
+; This defines the safe_malloc function as a global label.
+
+	.globl	safe_malloc
+	.type	safe_malloc, @function
+safe_malloc:
+.LFB22:
+
+; The various CFI directives are an assembly language extension
+; used to describe the call frame information. Ignore those.
+
+; The RDI register contains the input argument.
+; The value stays for the next call.
+
+; Note RBP does not point to standard stack frame.
+; Instead it is used as general purpose register.
+
+	.cfi_startproc
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rdi, %rbp
+	call	malloc
+
+; The RAX register contains the output result.
+
+	testq	%rax, %rax
+	je	.L5
+
+; The standard branch.
+; Return value in RAX.
+; Restore previous RBP.
+
+	popq	%rbp
+	.cfi_remember_state
+	.cfi_def_cfa_offset 8
+	ret
+
+; The error reporting branch.
+
+.L5:
+	.cfi_restore_state
+	movl	$.LC0, %edi
+	movq	%rbp, %rsi
+	call	printf
+
+; The exit function never returns.
+
+	movl	$12, %edi
+	call	exit
+	.cfi_endproc
+
+.LFE22:
+	.size	safe_malloc, .-safe_malloc
+	.ident	"GCC: (GNU) 11.2.1 20210728 (Red Hat 11.2.1-1)"
+	.section	.note.GNU-stack,"",@progbits

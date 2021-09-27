@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-gcc -S main.c
-gcc -g main.c -o main.executable
+g++ -S main.c
+g++ -g main.c -o main.executable
 objdump --all --disassemble main.executable > main.executable.dump
