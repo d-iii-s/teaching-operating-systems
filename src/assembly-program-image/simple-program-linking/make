@@ -1,0 +1,10 @@
+#!/bin/bash
+
+for LIB in lib*.c
+do
+    gcc -c ${LIB}
+    gcc -shared -fpic ${LIB} -o $(basename ${LIB} .c).so
+done
+
+gcc -o main.static.executable main.c lib*.o
+gcc -o main.dynamic.executable main.c -Wl,-rpath,. lib*.so
