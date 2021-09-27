@@ -14,11 +14,11 @@
 	.text
 	.p2align 4
 
-; This defines the safe_malloc function as a global label.
+; This defines the checked_malloc function as a global label.
 
-	.globl	safe_malloc
-	.type	safe_malloc, @function
-safe_malloc:
+	.globl	checked_malloc
+	.type	checked_malloc, @function
+checked_malloc:
 .LFB22:
 
 ; The various CFI directives are an assembly language extension
@@ -66,6 +66,6 @@ safe_malloc:
 	.cfi_endproc
 
 .LFE22:
-	.size	safe_malloc, .-safe_malloc
+	.size	checked_malloc, .-checked_malloc
 	.ident	"GCC: (GNU) 11.2.1 20210728 (Red Hat 11.2.1-1)"
 	.section	.note.GNU-stack,"",@progbits
