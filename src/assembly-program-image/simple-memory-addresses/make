@@ -1,0 +1,6 @@
+#!/bin/bash
+
+for SRC in *.c
+do
+    gcc -g -pie -fpie -O0 ${SRC} -o $(basename ${SRC} .c).executable
+done
