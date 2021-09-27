@@ -1,0 +1,4 @@
+print-main-local
+print-more-locals
+print-main-global
+print-with-recursion
