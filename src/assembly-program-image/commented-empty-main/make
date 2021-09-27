@@ -1,0 +1,6 @@
+#!/bin/bash
+set -euo pipefail
+
+gcc -S main.c
+gcc -g main.c -o main.debug
+objdump --all --disassemble main.debug > main.debug.dump
