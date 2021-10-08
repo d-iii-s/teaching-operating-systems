@@ -1,0 +1,9 @@
+#!/bin/bash
+
+for SRC in *.c
+do
+    for OPT in O0 O2 O3
+    do
+        gcc -g -pie -fpie -${OPT} ${SRC} -o $(basename ${SRC} .c).${OPT}.executable
+    done
+done
