@@ -1,12 +1,8 @@
 #!/bin/bash
 
-for SRC in *.c
+for LIB in c jemalloc tcmalloc
 do
-    for LIB in c jemalloc mimalloc tcmalloc
-    do
-        for OPT in O0 O2 O3
-        do
-            gcc -g -pie -fpie -${OPT} ${SRC} -l${LIB} -o $(basename ${SRC} .c).${LIB}.${OPT}.executable
-        done
-    done
+    gcc main.common.c -l${LIB} -o main.${LIB}.executable
 done
+
+gcc main.mimalloc.c -lmimalloc -o main.mimalloc.executable
