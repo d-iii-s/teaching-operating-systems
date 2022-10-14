@@ -1,0 +1,8 @@
+#!/bin/bash
+
+for LIB in c jemalloc tcmalloc
+do
+    gcc main.common.c -l${LIB} -o main.${LIB}.executable
+done
+
+gcc main.mimalloc.c -lmimalloc -o main.mimalloc.executable

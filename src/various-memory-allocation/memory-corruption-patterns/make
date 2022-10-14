@@ -1,0 +1,11 @@
+#!/bin/bash
+
+for SRC in *.c
+do
+    gcc -g -O0 -Wall -Wextra -Werror \
+        -Wno-use-after-free \
+        -Wno-return-local-addr \
+        -Wno-free-nonheap-object \
+        -Wno-unused-but-set-variable \
+        ${SRC} -o $(basename ${SRC} .c).executable
+done

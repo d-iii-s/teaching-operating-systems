@@ -4,6 +4,6 @@ for SRC in *.c
 do
     for OPT in O0 O2 O3
     do
-        gcc -g -${OPT} ${SRC} -o $(basename ${SRC} .c).${OPT}.executable
+        gcc -g -Wno-return-local-addr -${OPT} ${SRC} -o $(basename ${SRC} .c).${OPT}.executable
     done
 done
