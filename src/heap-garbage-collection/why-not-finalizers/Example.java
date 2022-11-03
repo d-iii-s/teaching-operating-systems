@@ -15,7 +15,7 @@ class Example {
         System.out.println ("Work returning ...");
     }
 
-    public static void main (String[] args) {
+    public static void main (String [] args) {
         new Example ().work ();
     }
 }
