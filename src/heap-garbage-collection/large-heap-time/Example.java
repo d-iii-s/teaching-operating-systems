@@ -1,7 +1,7 @@
 class Example {
 
     private static final int SIZE_CHECK_PERIOD = 1000;
-    private static final long FREE_SPACE_SLACK = 16*1024*1024;
+    private static final double FREE_SPACE_SLACK = 0.1;
 
     static class Payload {
         int i0;
@@ -26,6 +26,7 @@ class Example {
         Payload latest;
 
         System.out.println ("Allocating ...");
+        long slack = Math.round (runtime.maxMemory () * FREE_SPACE_SLACK);
         latest = initial;
         while (true) {
             for (int i = 0 ; i < SIZE_CHECK_PERIOD ; i ++) {
@@ -35,7 +36,7 @@ class Example {
                 latest.p0 = extension;
                 latest = extension;
             }
-            if (runtime.maxMemory () - runtime.totalMemory () + runtime.freeMemory() < FREE_SPACE_SLACK) {
+            if (runtime.maxMemory () - runtime.totalMemory () + runtime.freeMemory() < slack) {
                 break;
             }
         }
