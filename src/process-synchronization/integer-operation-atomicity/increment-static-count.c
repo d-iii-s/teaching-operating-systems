@@ -3,7 +3,7 @@
 
 volatile int counter = 0;
 
-#define LOOPS 1000000
+#define LOOPS 1000000000
 
 void *counter_thread_body (void *arguments) {
     for (int i = 0 ; i < LOOPS ; i ++) {
@@ -22,6 +22,7 @@ int main (void) {
     pthread_join (thread_one, NULL);
     pthread_join (thread_two, NULL);
 
+    printf ("Loop count is %i.\n", LOOPS);
     printf ("Counter value is %i.\n", counter);
 
     return (0);
