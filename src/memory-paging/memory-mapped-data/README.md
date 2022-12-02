@@ -1,8 +1,8 @@
-# Memory Mapped Files
+# Memory Mapped Data
 
-The example shows how memory mapped files work, and invites
-experimenting with sharing the same file among multiple
-processes.
+The example shows how memory mapped files work for data,
+and invites experimenting with sharing the same file
+among multiple processes.
 
 In particular, check out the interaction between
 normal and mapped versions, and consider what
