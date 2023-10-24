@@ -1,7 +1,7 @@
 # Why Not Finalizers
 
 The example should illustrate why using finalizers is potentially risky.
-Intuition suggests objects should not be collected why their methods
+Intuition suggests objects should not be collected while their methods
 are running, but the example shows exactly that happening.
 
 ## Running the example
