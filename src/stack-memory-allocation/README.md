@@ -18,3 +18,12 @@ Optimization again also interesting.
 Writing into stack frame to illustrate potential for control flow corruption.
 Exact behavior again depends on the compiler optimization level,
 the control flow corruption effect aims at no optimization.
+
+## Hit Stack Variable
+
+Writing into stack frame at interactively entered offsets.
+
+## See Stack Growth
+
+Stack overflow with memory map dump.
+Shows how the stack block grows on demand.
