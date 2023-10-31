@@ -1,4 +1,5 @@
 #include <chrono>
+#include <random>
 #include <thread>
 #include <cassert>
 #include <cstdlib>
@@ -39,7 +40,8 @@ cache_line_t *do_mem_alloc () {
     for (size_t index = 0 ; index < count ; index ++) {
         chain [index] = index;
     }
-    std::random_shuffle (chain, chain + count);
+    auto generator = std::default_random_engine ();
+    std::shuffle (chain, chain + count, generator);
     cache_line_t *block = new cache_line_t [count];
     auto current = block + chain [count - 1];
     for (size_t index = 0 ; index < count ; index ++) {
