@@ -34,7 +34,7 @@ int main (int argc, char *argv []) {
     pthread_t thread_one, thread_two;
 
     pthread_create (&thread_one, NULL, thread_one_body, NULL);
-    pthread_create (&thread_one, NULL, thread_two_body, NULL);
+    pthread_create (&thread_two, NULL, thread_two_body, NULL);
     pthread_join (thread_one, NULL);
     pthread_join (thread_two, NULL);
 
