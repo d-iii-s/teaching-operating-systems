@@ -1,0 +1,74 @@
+#define USED_OPEN 1
+#define USED_MMAP 2
+#define USED_READ 4
+#define USED_WRITE 8
+
+BEGIN
+{
+    @used_rw = 0;
+    @used_mmap = 0;
+    @used_both = 0;
+    @used_none = 0;
+
+    printf ("rw\tmmap\tboth\tnone\n");
+}
+
+tracepoint:syscalls:sys_exit_open,
+tracepoint:syscalls:sys_exit_openat,
+tracepoint:syscalls:sys_exit_openat2
+{
+    if (args.ret >= 0) {
+        @handles [pid, args.ret] = USED_OPEN;
+    }
+}
+
+tracepoint:syscalls:sys_enter_mmap
+/@handles [pid, args.fd] & USED_OPEN/
+{
+    @handles [pid, args.fd] |= USED_MMAP;
+}
+
+tracepoint:syscalls:sys_enter_read,
+tracepoint:syscalls:sys_enter_readv
+/@handles [pid, args.fd] & USED_OPEN/
+{
+    @handles [pid, args.fd] |= USED_READ;
+}
+
+tracepoint:syscalls:sys_enter_write,
+tracepoint:syscalls:sys_enter_writev
+/@handles [pid, args.fd] & USED_OPEN/
+{
+    @handles [pid, args.fd] |= USED_WRITE;
+}
+
+tracepoint:syscalls:sys_enter_close
+/@handles [pid, args.fd] & USED_OPEN/
+{
+    $flags = @handles [pid, args.fd];
+    delete (@handles [pid, args.fd]);
+
+    if ($flags & USED_MMAP) {
+        if ($flags & (USED_READ | USED_WRITE)) {
+            @used_both ++;
+        } else {
+            @used_mmap ++;
+        }
+    } else {
+        if ($flags & (USED_READ | USED_WRITE)) {
+            @used_rw ++;
+        } else {
+            @used_none ++;
+        }
+    }
+}
+
+interval:s:1
+{
+    printf ("%d\t%d\t%d\t%d\n", @used_rw, @used_mmap, @used_both, @used_none);
+}
+
+END
+{
+    clear (@handles)
+}
