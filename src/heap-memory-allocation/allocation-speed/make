@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Do not enable optimizations otherwise some allocations may not happen !
+
+for LIB in c jemalloc tcmalloc
+do
+    gcc main.common.c -l${LIB} -o main.${LIB}.executable
+done
+
+gcc main.alloca.c -o main.alloca.executable
+gcc main.mimalloc.c -lmimalloc -o main.mimalloc.executable
