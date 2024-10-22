@@ -28,6 +28,7 @@ class Example {
         System.out.println ("Allocating ...");
         long slack = Math.round (runtime.maxMemory () * FREE_SPACE_SLACK);
         latest = initial;
+        long total = 0;
         while (true) {
             for (int i = 0 ; i < SIZE_CHECK_PERIOD ; i ++) {
                 Payload extension = new Payload ();
@@ -36,10 +37,12 @@ class Example {
                 latest.p0 = extension;
                 latest = extension;
             }
+            total += SIZE_CHECK_PERIOD;
             if (runtime.maxMemory () - runtime.totalMemory () + runtime.freeMemory() < slack) {
                 break;
             }
         }
+        System.out.println ("Allocated " + total + " instances");
 
         System.out.println ("Pruning ...");
         latest = initial;
