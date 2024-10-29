@@ -3,7 +3,8 @@
 
 #include "shared.h"
 
-void *blocks [LIVE];
+// Volatile used to avoid optimizing away allocations.
+void * volatile blocks [LIVE];
 
 int main (void) {
     for (long i = 0 ; i < LIVE ; i ++) {

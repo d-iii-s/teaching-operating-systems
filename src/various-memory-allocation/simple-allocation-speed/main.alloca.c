@@ -2,8 +2,11 @@
 
 #include "shared.h"
 
+// Volatile used to avoid optimizing away allocations.
+void * volatile p;
+
 void allocate_and_free (void) {
-    void *p = alloca (SIZE);
+    p = alloca (SIZE);
 }
 
 int main (void) {
