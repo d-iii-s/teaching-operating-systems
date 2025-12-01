@@ -18,7 +18,7 @@ tracepoint:syscalls:sys_exit_openat,
 tracepoint:syscalls:sys_exit_openat2
 {
     if (args.ret >= 0) {
-        @handles [pid, args.ret] = USED_OPEN;
+        @handles [pid, (uint64) args.ret] = USED_OPEN;
     }
 }
 
