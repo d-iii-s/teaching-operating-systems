@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-int test (int depth) {
+void test (int depth) {
     int i = 1234;
     printf ("%p\n", &i);
     if (depth > 0) test (depth - 1);
