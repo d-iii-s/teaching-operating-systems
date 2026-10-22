@@ -1,6 +1,6 @@
 # Why Not Finalizers
 
-The example should illustrate why using finalizers is potentially risky.
+The example illustrates potentially unexpected behavior of finalizers.
 Intuition suggests objects should not be collected while their methods
 are running, but the example shows exactly that happening.
 
